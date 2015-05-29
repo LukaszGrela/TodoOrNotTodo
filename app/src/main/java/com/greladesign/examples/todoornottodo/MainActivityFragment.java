@@ -2,8 +2,8 @@ package com.greladesign.examples.todoornottodo;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -18,7 +18,13 @@ import com.greladesign.examples.todoornottodo.squidb.Todo;
 import com.greladesign.examples.todoornottodo.squidb.TodosAdapter;
 import com.yahoo.squidb.data.DatabaseDao;
 import com.yahoo.squidb.data.SquidCursor;
+import com.yahoo.squidb.sql.Criterion;
 import com.yahoo.squidb.sql.Query;
+import com.yahoo.squidb.sql.Update;
+
+import static com.greladesign.examples.todoornottodo.MainActivityFragment.FilterOption.ACTIVE;
+import static com.greladesign.examples.todoornottodo.MainActivityFragment.FilterOption.ALL;
+import static com.greladesign.examples.todoornottodo.MainActivityFragment.FilterOption.COMPLETED;
 
 
 /**
@@ -27,9 +33,32 @@ import com.yahoo.squidb.sql.Query;
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<SquidCursor<Todo>> {
 
 
-    private static final int LOADER_ID = 1;
+    private static final int LOADER_ID_ALL = 1;
+    private static final int LOADER_ID_ACTIVE = 2;
+    private static final int LOADER_ID_COMPLETED = 3;
+
     private static final String TAG = "MainActivityFragment";
     private ListView mList;
+    private TodosAdapter.TodoRowActionListener mTodoRowActionListener = new TodosAdapter.TodoRowActionListener() {
+        @Override
+        public void onCompletionChanged(int position, boolean state) {
+            Log.i(TAG, "onCompletionChanged(int position="+position+", boolean state="+state+")");
+            final Todo todo = mAdapter.getItem(position);
+            if(todo != null) {
+                final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
+                final DatabaseDao dao = app.dao();
+                Criterion criterion = Todo.ID.eq(todo.getId());
+                Update update = Update.table(Todo.TABLE).set(Todo.DONE, state).where(criterion);
+                final int result = dao.update(update);
+                if(result == -1 || result > 1) {
+                    Log.e(TAG, "Failed to update Todo, result="+result);
+                }
+            }
+        }
+    };
+    private Button mBtnFilterCompleted;
+    private Button mBtnFilterActive;
+    private Button mBtnFilterAll;
 
     public enum FilterOption {
         ALL, ACTIVE, COMPLETED
@@ -62,6 +91,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         Log.i(TAG, "onCreate");
 
         mAdapter = new TodosAdapter(getActivity());
+        mAdapter.setTodoRowActionListener(mTodoRowActionListener);
     }
 
     @Override
@@ -91,6 +121,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onDetach() {
         super.onDetach();
         mCallback = sDummyCallback;
+        //mAdapter.setTodoRowActionListener(null);
     }
 
     private void findViews(View view) {
@@ -104,31 +135,34 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 }
             }
         });
-        Button btnFilterAll = (Button) view.findViewById(R.id.btnShowAll);
-        btnFilterAll.setOnClickListener(new View.OnClickListener() {
+        mBtnFilterAll = (Button) view.findViewById(R.id.btnShowAll);
+        mBtnFilterAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mCallback != null) {
-                    mCallback.onFilterChanged(FilterOption.ALL);
+                    mCallback.onFilterChanged(ALL);
                 }
+                filterList((Button)view, ALL);
             }
         });
-        Button btnFilterActive = (Button) view.findViewById(R.id.btnShowActive);
-        btnFilterActive.setOnClickListener(new View.OnClickListener() {
+        mBtnFilterActive = (Button) view.findViewById(R.id.btnShowActive);
+        mBtnFilterActive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mCallback != null) {
-                    mCallback.onFilterChanged(FilterOption.ACTIVE);
+                    mCallback.onFilterChanged(ACTIVE);
                 }
+                filterList((Button)view, ACTIVE);
             }
         });
-        Button btnFilterCompleted = (Button) view.findViewById(R.id.btnShowCompleted);
-        btnFilterCompleted.setOnClickListener(new View.OnClickListener() {
+        mBtnFilterCompleted = (Button) view.findViewById(R.id.btnShowCompleted);
+        mBtnFilterCompleted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mCallback != null) {
-                    mCallback.onFilterChanged(FilterOption.COMPLETED);
+                    mCallback.onFilterChanged(COMPLETED);
                 }
+                filterList((Button)view, COMPLETED);
             }
         });
     }
@@ -136,22 +170,59 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private void initList() {
 
         mList.setAdapter(mAdapter);
-
-        LoaderManager lm = getLoaderManager();
-        lm.initLoader(LOADER_ID, null, this);
+        filterList(mBtnFilterAll, ALL);
     }
+
+    private void toggleButtons(Button selected) {
+        mBtnFilterAll.setSelected(false);
+        mBtnFilterActive.setSelected(false);
+        mBtnFilterCompleted.setSelected(false);
+        if(selected != null ){
+            selected.setSelected(true);
+        }
+    }
+
+    private void filterList(Button selected, FilterOption option) {
+        toggleButtons(selected);
+        final LoaderManager lm = getLoaderManager();
+        switch (option) {
+            case ALL:
+                lm.initLoader(LOADER_ID_ALL, null, this);
+                break;
+            case ACTIVE:
+                lm.initLoader(LOADER_ID_ACTIVE, null, this);
+                break;
+            case COMPLETED:
+                lm.initLoader(LOADER_ID_COMPLETED, null, this);
+                break;
+        }
+    }
+
     /* INTERFACE LoaderManager.LoaderCallbacks */
     @Override
     public Loader<SquidCursor<Todo>> onCreateLoader(int id, Bundle args) {
         Log.i(TAG, "onCreateLoader");
 
-        final Query allTodosQuery = Query.select(Todo.PROPERTIES);
+        final Query query = Query.select(Todo.PROPERTIES);
+
+        switch (id){
+            case LOADER_ID_ACTIVE:
+                query.where(Todo.DONE.eq(false));
+                break;
+            case LOADER_ID_COMPLETED:
+                query.where(Todo.DONE.eq(true));
+                break;
+            case LOADER_ID_ALL:
+            default:
+                /* do nothing already set as "all" */
+                break;
+        }
+
         final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
         final DatabaseDao dao = app.dao();
         final Context context = app.getApplicationContext();
-        final SupportSquidCursorLoader<Todo> loader = new SupportSquidCursorLoader<Todo>(context, dao, Todo.class, allTodosQuery);
+        final SupportSquidCursorLoader<Todo> loader = new SupportSquidCursorLoader<Todo>(context, dao, Todo.class, query);
         loader.setNotificationUri(Todo.CONTENT_URI);
-
         return loader;
     }
 

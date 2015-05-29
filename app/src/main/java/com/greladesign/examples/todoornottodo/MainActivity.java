@@ -1,18 +1,17 @@
 package com.greladesign.examples.todoornottodo;
 
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.greladesign.examples.todoornottodo.NewTodoDialogFragment.NewTodoDialogListener;
 import com.greladesign.examples.todoornottodo.squidb.Todo;
+import com.yahoo.squidb.sql.Criterion;
 
 import java.util.Random;
-
-import static com.greladesign.examples.todoornottodo.MainActivityFragment.FilterOption.ACTIVE;
 
 
 public class MainActivity extends ActionBarActivity implements MainActivityFragment.MainActivityHandler, NewTodoDialogListener {
@@ -44,7 +43,7 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
         if (id == R.id.action_clear) {
 
             final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
-            app.dao().deleteAll(Todo.class);
+            app.dao().deleteWhere(Todo.class, Criterion.all);
 
             return true;
         }
