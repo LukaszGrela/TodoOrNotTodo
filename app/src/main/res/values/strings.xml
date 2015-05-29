@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TodoOrNotTodo</string>
+    <string name="action_clear">Clear</string>
+
+    <string name="dialog_new_todo_add">Add</string>
+    <string name="dialog_new_todo_title">Add new task</string>
+</resources>
