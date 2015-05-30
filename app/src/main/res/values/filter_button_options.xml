@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="filter_options">
+        <item>All</item>
+        <item>Active</item>
+        <item>Completed</item>
+    </array>
+</resources>

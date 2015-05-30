@@ -12,20 +12,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.ToggleButton;
 
 import com.greladesign.examples.todoornottodo.squidb.SupportSquidCursorLoader;
 import com.greladesign.examples.todoornottodo.squidb.Todo;
 import com.greladesign.examples.todoornottodo.squidb.TodosAdapter;
+import com.greladesign.examples.todoornottodo.ui.FilterButtons;
 import com.yahoo.squidb.data.DatabaseDao;
 import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Criterion;
 import com.yahoo.squidb.sql.Query;
 import com.yahoo.squidb.sql.Update;
 
-import static com.greladesign.examples.todoornottodo.MainActivityFragment.FilterOption.ACTIVE;
 import static com.greladesign.examples.todoornottodo.MainActivityFragment.FilterOption.ALL;
-import static com.greladesign.examples.todoornottodo.MainActivityFragment.FilterOption.COMPLETED;
 
 
 /**
@@ -57,9 +57,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             }
         }
     };
-    private ToggleButton mBtnFilterCompleted;
-    private ToggleButton mBtnFilterActive;
-    private ToggleButton mBtnFilterAll;
+    private FilterButtons mFilterGroup;
+    private FilterButtons.OptionsChangedListener mFilterOptionChanged = new FilterButtons.OptionsChangedListener() {
+        @Override
+        public void onOptionChanged(int btnId) {
+            filterList(btnId);
+        }
+    };
+
 
     public enum FilterOption {
         ALL, ACTIVE, COMPLETED
@@ -121,6 +126,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.i(TAG, "onDetach");
         mCallback = sDummyCallback;
         //mAdapter.setTodoRowActionListener(null);
     }
@@ -136,65 +142,30 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 }
             }
         });
-        mBtnFilterAll = (ToggleButton) view.findViewById(R.id.btnShowAll);
-        mBtnFilterAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mCallback != null) {
-                    mCallback.onFilterChanged(ALL);
-                }
-                filterList((ToggleButton)view, ALL);
-            }
-        });
-        mBtnFilterActive = (ToggleButton) view.findViewById(R.id.btnShowActive);
-        mBtnFilterActive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mCallback != null) {
-                    mCallback.onFilterChanged(ACTIVE);
-                }
-                filterList((ToggleButton)view, ACTIVE);
-            }
-        });
-        mBtnFilterCompleted = (ToggleButton) view.findViewById(R.id.btnShowCompleted);
-        mBtnFilterCompleted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mCallback != null) {
-                    mCallback.onFilterChanged(COMPLETED);
-                }
-                filterList((ToggleButton)view, COMPLETED);
-            }
-        });
+
+        mFilterGroup = (FilterButtons) view.findViewById(R.id.filterGroup);
+        mFilterGroup.setOnOptionChangedListener(mFilterOptionChanged);
     }
 
     private void initList() {
-
+        Log.i(TAG, "initList");
         mList.setAdapter(mAdapter);
-        filterList(mBtnFilterAll, ALL);
+        //
+        mFilterGroup.selectButton(0);
+        filterList(0);
     }
-
-    private void toggleButtons(ToggleButton selected) {
-        mBtnFilterAll.setSelected(false);
-        mBtnFilterActive.setSelected(false);
-        mBtnFilterCompleted.setSelected(false);
-        if(selected != null ){
-            selected.setSelected(true);
-        }
-    }
-
-    private void filterList(ToggleButton selected, FilterOption option) {
-        toggleButtons(selected);
+    private void filterList(int btnId){
+        Log.i(TAG, "filterList("+btnId+")");
         final LoaderManager lm = getLoaderManager();
-        switch (option) {
-            case ALL:
-                lm.initLoader(LOADER_ID_ALL, null, this);
+        switch (btnId) {
+            case 0:
+                lm.restartLoader(LOADER_ID_ALL, null, this);
                 break;
-            case ACTIVE:
-                lm.initLoader(LOADER_ID_ACTIVE, null, this);
+            case 1:
+                lm.restartLoader(LOADER_ID_ACTIVE, null, this);
                 break;
-            case COMPLETED:
-                lm.initLoader(LOADER_ID_COMPLETED, null, this);
+            case 2:
+                lm.restartLoader(LOADER_ID_COMPLETED, null, this);
                 break;
         }
     }
@@ -202,7 +173,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     /* INTERFACE LoaderManager.LoaderCallbacks */
     @Override
     public Loader<SquidCursor<Todo>> onCreateLoader(int id, Bundle args) {
-        Log.i(TAG, "onCreateLoader");
+        Log.i(TAG, "onCreateLoader("+id+")");
 
         final Query query = Query.select(Todo.PROPERTIES);
 
@@ -229,11 +200,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<SquidCursor<Todo>> loader, SquidCursor<Todo> data) {
+        Log.i(TAG, "onLoadFinished");
         mAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<SquidCursor<Todo>> loader) {
+        Log.i(TAG, "onLoaderReset");
         mAdapter.swapCursor(null);
     }
 }

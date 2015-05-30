@@ -82,7 +82,7 @@ public class TodosAdapter extends SquidCursorAdapter<Todo> {
             throw new IllegalStateException(
                     getClass().getSimpleName() +" requires the resource ID to be a TextView", e);
         }
-        Log.i(TAG, "item="+item);
+        //Log.i(TAG, "item="+item);
         if (item != null) {
             if (tvTask != null) {
                 tvTask.setText(item.getTask());

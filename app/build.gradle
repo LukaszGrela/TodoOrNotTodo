@@ -19,7 +19,7 @@ android {
         targetSdkVersion 22
 
         versionCode code
-        versionName "0.5.2("+code+")"
+        versionName "0.5.3("+code+")"
     }
     buildTypes {
         release {
