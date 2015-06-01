@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RadioGroup;
-import android.widget.ToggleButton;
 
 import com.greladesign.examples.todoornottodo.squidb.SupportSquidCursorLoader;
 import com.greladesign.examples.todoornottodo.squidb.Todo;
@@ -25,8 +23,6 @@ import com.yahoo.squidb.sql.Criterion;
 import com.yahoo.squidb.sql.Query;
 import com.yahoo.squidb.sql.Update;
 
-import static com.greladesign.examples.todoornottodo.MainActivityFragment.FilterOption.ALL;
-
 
 /**
  * A placeholder fragment containing a simple view.
@@ -34,7 +30,7 @@ import static com.greladesign.examples.todoornottodo.MainActivityFragment.Filter
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<SquidCursor<Todo>> {
 
 
-    private static final int LOADER_ID_ALL = 1;
+    private static final int LOADER_ID = 1;
     private static final int LOADER_ID_ACTIVE = 2;
     private static final int LOADER_ID_COMPLETED = 3;
 
@@ -64,10 +60,38 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             filterList(btnId);
         }
     };
+    /**
+     * Holds currently selected filter option
+     */
+    private FilterOption mCurrentFilterOption = FilterOption.ALL;
 
-
+    /**
+     * Filter option values
+     */
     public enum FilterOption {
-        ALL, ACTIVE, COMPLETED
+        ALL(0), ACTIVE(1), COMPLETED(2);
+        private int index;
+        private FilterOption(int index){
+            this.index = index;
+        }
+
+        /**
+         * Returns FilterOption matching index assigned to enum or FilterOption.ALL when can't match index
+         * @param index
+         * @return
+         */
+        public static FilterOption validate(int index) {
+            switch (index){
+                case 2:
+                    return COMPLETED;
+                case 1:
+                    return ACTIVE;
+                case 0:
+                default:
+                /* do nothing already set as "all" */
+                    return ALL;
+            }
+        }
     }
 
     public interface MainActivityHandler {
@@ -157,17 +181,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private void filterList(int btnId){
         Log.i(TAG, "filterList("+btnId+")");
         final LoaderManager lm = getLoaderManager();
-        switch (btnId) {
-            case 0:
-                lm.restartLoader(LOADER_ID_ALL, null, this);
-                break;
-            case 1:
-                lm.restartLoader(LOADER_ID_ACTIVE, null, this);
-                break;
-            case 2:
-                lm.restartLoader(LOADER_ID_COMPLETED, null, this);
-                break;
-        }
+        mCurrentFilterOption = FilterOption.validate(btnId);
+        lm.restartLoader(LOADER_ID, null, this);
     }
 
     /* INTERFACE LoaderManager.LoaderCallbacks */
@@ -177,14 +192,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         final Query query = Query.select(Todo.PROPERTIES);
 
-        switch (id){
-            case LOADER_ID_ACTIVE:
+        switch (mCurrentFilterOption){
+            case ACTIVE://not done
                 query.where(Todo.DONE.eq(false));
                 break;
-            case LOADER_ID_COMPLETED:
+            case COMPLETED://done
                 query.where(Todo.DONE.eq(true));
                 break;
-            case LOADER_ID_ALL:
+            case ALL:
             default:
                 /* do nothing already set as "all" */
                 break;

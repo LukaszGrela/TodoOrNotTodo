@@ -15,6 +15,8 @@ import android.widget.RadioGroup;
 
 import com.greladesign.examples.todoornottodo.squidb.Todo;
 
+import static com.greladesign.examples.todoornottodo.Utils.randInt;
+
 public class NewTodoDialogFragment extends DialogFragment {
 
     private static NewTodoDialogListener sDummyListener = new NewTodoDialogListener() {
@@ -59,11 +61,19 @@ public class NewTodoDialogFragment extends DialogFragment {
                                 //
                                 if(mListener != null){
                                     final Todo todo = new Todo();
+                                    final String task = mTask.getText().toString();
+                                    //temp
+                                    if("".equals(task)) {
 
-                                    todo.setDate(System.currentTimeMillis());
-                                    todo.setTask(mTask.getText().toString());
-                                    todo.setPriority(priority);
+                                        todo.setTask("Random Task - "+randInt(0,1979));
+                                        todo.setPriority(randInt(0,2));
 
+                                    } else {
+                                        //temp
+                                        todo.setDate(System.currentTimeMillis());
+                                        todo.setPriority(priority);
+                                        todo.setTask(task);
+                                    }
                                     mListener.onTodoAdded(todo);
                                 }
                                 //
