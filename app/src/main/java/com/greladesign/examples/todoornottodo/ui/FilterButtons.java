@@ -7,9 +7,7 @@ import android.util.Log;
 import android.view.InflateException;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.ToggleButton;
 
 import com.greladesign.examples.todoornottodo.R;
 
@@ -74,13 +72,19 @@ public class FilterButtons extends LinearLayout implements View.OnClickListener 
 
     private void init(Context context, AttributeSet attrs, int labelsArrayResourceId) {
         final CharSequence[] labels;
-        if (attrs == null) {
+        if( isInEditMode() ) {
+            labels = new CharSequence[3];
+            labels[0] = "Label 1";
+            labels[1] = "Label 2";
+            labels[2] = "Label 3";
+        } else if (attrs == null) {
             labels = context.getResources().getTextArray(labelsArrayResourceId);
         } else {
             final TypedArray customAttrs = context.obtainStyledAttributes(attrs, R.styleable.FilterButtons);
             labels = customAttrs.getTextArray(R.styleable.FilterButtons_labels);
             customAttrs.recycle();
         }
+
         //
         if(labels == null) {
             throw new InflateException("FilterButtons requires a labels");

@@ -11,8 +11,6 @@ import com.greladesign.examples.todoornottodo.NewTodoDialogFragment.NewTodoDialo
 import com.greladesign.examples.todoornottodo.squidb.Todo;
 import com.yahoo.squidb.sql.Criterion;
 
-import java.util.Random;
-
 
 public class MainActivity extends ActionBarActivity implements MainActivityFragment.MainActivityHandler, NewTodoDialogListener {
 
@@ -23,7 +21,6 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,20 +65,14 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
     }
 
     @Override
-    public void onFilterChanged(MainActivityFragment.FilterOption option) {
-        switch (option) {
-            case ACTIVE:
-                Log.i(TAG, "Show Active tasks");
-                break;
-            case COMPLETED:
-                Log.i(TAG, "Show Completed tasks");
-                break;
-            case ALL:
-            default:
-                Log.i(TAG, "Show All tasks");
-                break;
-        }
+    public void onClearTasks() {
+        /* we could check if user is sure to remove them all */
+
+        final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
+        final int deleted = app.dao().deleteWhere(Todo.class, Todo.DONE.eq(true));
+        Log.i(TAG, "Deleted "+deleted+" tasks.");
     }
+
 
 
     private void openAddTodoDialogue() {

@@ -2,10 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivityFragment"
+    android:layout_height="match_parent"
+    tools:context=".MainActivityFragment"
     tools:showIn="@layout/activity_main">
 
 
@@ -16,25 +14,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_gravity="center"
-        android:layout_above="@+id/btnAdd"
+        android:layout_above="@+id/tvStatus"
         android:layout_below="@+id/filterGroup" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add TODO"
-        android:id="@+id/btnAdd"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
 
         <com.greladesign.examples.todoornottodo.ui.FilterButtons
             android:id="@+id/filterGroup"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_alignParentTop="true"
@@ -43,46 +28,82 @@
             >
 
         </com.greladesign.examples.todoornottodo.ui.FilterButtons>
- <!--
-        <RadioGroup android:id="@+id/filterGroup"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:orientation="horizontal"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_centerHorizontal="true"
-            >
-        <ToggleButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnShowAll"
-            android:layout_weight="1"
-            android:textOff="All"
-            android:textOn="All" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Button"
-                android:id="@+id/button"
-                android:layout_weight="1" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/tvStatus"
+        android:layout_above="@+id/btnsLayout"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:gravity="center" />
 
-            <ToggleButton
-            android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/btnsLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        >
+
+        <Button
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/btnShowActive"
-            android:layout_weight="1"
-            android:textOff="Active"
-            android:textOn="Active" />
-        <ToggleButton
-            android:layout_width="wrap_content"
+            android:text="Add TODO"
+            android:id="@+id/btnAdd"
+            android:layout_weight="1" />
+        <Button
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/btnShowCompleted"
-            android:layout_weight="1"
-            android:textOff="Completed"
-            android:textOn="Completed" />
-    </RadioGroup>
--->
+            android:text="Clear Completed"
+            android:id="@+id/btnClear"
+            android:layout_weight="1" />
+    </LinearLayout>
+    <!--
+           <RadioGroup android:id="@+id/filterGroup"
+               android:layout_width="fill_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="0dp"
+               android:orientation="horizontal"
+               android:layout_alignParentTop="true"
+               android:layout_alignParentRight="true"
+               android:layout_alignParentLeft="true"
+               android:layout_centerHorizontal="true"
+               >
+           <ToggleButton
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/btnShowAll"
+               android:layout_weight="1"
+               android:textOff="All"
+               android:textOn="All" />
+
+               <Button
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="New Button"
+                   android:id="@+id/button"
+                   android:layout_weight="1" />
+
+               <ToggleButton
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/btnShowActive"
+               android:layout_weight="1"
+               android:textOff="Active"
+               android:textOn="Active" />
+           <ToggleButton
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/btnShowCompleted"
+               android:layout_weight="1"
+               android:textOff="Completed"
+               android:textOn="Completed" />
+       </RadioGroup>
+   -->
 </RelativeLayout>

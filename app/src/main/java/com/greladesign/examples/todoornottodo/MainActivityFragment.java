@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.greladesign.examples.todoornottodo.squidb.SupportSquidCursorLoader;
 import com.greladesign.examples.todoornottodo.squidb.Todo;
@@ -27,19 +28,17 @@ import com.yahoo.squidb.sql.Update;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<SquidCursor<Todo>> {
+public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<SquidCursor<Todo>> {{}
 
 
     private static final int LOADER_ID = 1;
-    private static final int LOADER_ID_ACTIVE = 2;
-    private static final int LOADER_ID_COMPLETED = 3;
 
     private static final String TAG = "MainActivityFragment";
     private ListView mList;
     private TodosAdapter.TodoRowActionListener mTodoRowActionListener = new TodosAdapter.TodoRowActionListener() {
         @Override
         public void onCompletionChanged(int position, boolean state) {
-            Log.i(TAG, "onCompletionChanged(int position="+position+", boolean state="+state+")");
+            Log.i(TAG, "TodoRowActionListener(int position="+position+", boolean state="+state+")");
             final Todo todo = mAdapter.getItem(position);
             if(todo != null) {
                 final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
@@ -64,6 +63,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
      * Holds currently selected filter option
      */
     private FilterOption mCurrentFilterOption = FilterOption.ALL;
+    private TextView mStatus;
+    private Button mBtnClear;
 
     /**
      * Filter option values
@@ -96,7 +97,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     public interface MainActivityHandler {
         void onAddTask();
-        void onFilterChanged(FilterOption option);
+        void onClearTasks();
     }
 
     private MainActivityHandler sDummyCallback = new MainActivityHandler() {
@@ -104,7 +105,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         public void onAddTask() {}
 
         @Override
-        public void onFilterChanged(FilterOption option) {}
+        public void onClearTasks() {
+
+        }
     };
     private MainActivityHandler mCallback = sDummyCallback;
     private TodosAdapter mAdapter;
@@ -136,6 +139,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         return view;
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null) {
+
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -152,11 +162,22 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         super.onDetach();
         Log.i(TAG, "onDetach");
         mCallback = sDummyCallback;
-        //mAdapter.setTodoRowActionListener(null);
     }
 
     private void findViews(View view) {
+        mStatus = (TextView) view.findViewById(R.id.tvStatus);
+        mStatus.setText("");
         mList = (ListView) view.findViewById(R.id.listView);
+        mBtnClear = (Button) view.findViewById(R.id.btnClear);
+        mBtnClear.setVisibility(View.GONE);
+        mBtnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mCallback != null) {
+                    mCallback.onClearTasks();
+                }
+            }
+        });
         Button btnAdd = (Button) view.findViewById(R.id.btnAdd);
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,14 +196,38 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         Log.i(TAG, "initList");
         mList.setAdapter(mAdapter);
         //
-        mFilterGroup.selectButton(0);
-        filterList(0);
+        final int filterSelectionIndex = mCurrentFilterOption.index;
+        mFilterGroup.selectButton(filterSelectionIndex);
+        filterList(filterSelectionIndex);
     }
+
     private void filterList(int btnId){
         Log.i(TAG, "filterList("+btnId+")");
         final LoaderManager lm = getLoaderManager();
         mCurrentFilterOption = FilterOption.validate(btnId);
         lm.restartLoader(LOADER_ID, null, this);
+    }
+
+    /**
+     * Update the task's left counter and show/hide the clear completed task button
+     */
+    private void updateTaskCount() {
+
+        final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
+        final DatabaseDao dao = app.dao();
+
+        final int count = dao.count(Todo.class, Todo.DONE.eq(false));
+        final String label = count + " item(s) left.";
+        Log.i(TAG, label);
+
+        mStatus.setText(label);
+        final int completed = dao.count(Todo.class, Todo.DONE.eq(true));
+
+        if(completed > 0) {
+            mBtnClear.setVisibility(View.VISIBLE);
+        } else {
+            mBtnClear.setVisibility(View.GONE);
+        }
     }
 
     /* INTERFACE LoaderManager.LoaderCallbacks */
@@ -217,6 +262,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(Loader<SquidCursor<Todo>> loader, SquidCursor<Todo> data) {
         Log.i(TAG, "onLoadFinished");
         mAdapter.swapCursor(data);
+        updateTaskCount();
     }
 
     @Override

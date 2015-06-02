@@ -13,5 +13,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        //temp fix for Error:Could not find com.yahoo.squidb:apt-utils:1.0.0.
+        maven { url "https://dl.bintray.com/yahoo/maven" }
     }
 }
