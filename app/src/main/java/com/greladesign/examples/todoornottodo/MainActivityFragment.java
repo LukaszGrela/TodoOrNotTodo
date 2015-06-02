@@ -7,7 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -162,12 +164,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         super.onDetach();
         Log.i(TAG, "onDetach");
         mCallback = sDummyCallback;
+        unregisterForContextMenu(mList);
     }
 
     private void findViews(View view) {
         mStatus = (TextView) view.findViewById(R.id.tvStatus);
         mStatus.setText("");
         mList = (ListView) view.findViewById(R.id.listView);
+        registerForContextMenu(mList);
         mBtnClear = (Button) view.findViewById(R.id.btnClear);
         mBtnClear.setVisibility(View.GONE);
         mBtnClear.setOnClickListener(new View.OnClickListener() {
@@ -227,6 +231,19 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             mBtnClear.setVisibility(View.VISIBLE);
         } else {
             mBtnClear.setVisibility(View.GONE);
+        }
+    }
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if(v.getId() == R.id.listView) {
+            //AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            //menu.setHeaderTitle(Countries[info.position]);
+            String[] menuItems = {"Edit","Delete"};
+            for (int i = 0; i<menuItems.length; i++) {
+                menu.add(Menu.NONE, i, i, menuItems[i]);
+            }
         }
     }
 

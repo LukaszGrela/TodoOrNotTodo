@@ -89,6 +89,7 @@ public class FilterButtons extends LinearLayout implements View.OnClickListener 
         if(labels == null) {
             throw new InflateException("FilterButtons requires a labels");
         }
+        final LayoutParams params = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
         //
         for(int i=0; i<3; i++){
             final CharSequence label = labels[i];
@@ -97,7 +98,7 @@ public class FilterButtons extends LinearLayout implements View.OnClickListener 
             button.setOnClickListener(this);
             button.setTag(i);
             button.setText(label);
-
+            button.setLayoutParams(params);
             if(i==0){
                 mSelectedButton = button;
                 mSelectedButton.setEnabled(!true);

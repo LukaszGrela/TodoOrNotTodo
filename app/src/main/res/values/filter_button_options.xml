@@ -3,6 +3,6 @@
     <array name="filter_options">
         <item>All</item>
         <item>Active</item>
-        <item>Completed</item>
+        <item>Finished</item>
     </array>
 </resources>
