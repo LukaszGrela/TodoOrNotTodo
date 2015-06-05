@@ -19,6 +19,12 @@ public class FilterButtons extends LinearLayout implements View.OnClickListener 
 
 
     private static final String TAG = "FilterButtons";
+
+    private AttributeSet mAttrs = null;
+    private Context mContext = null;
+    private int mLabelsResourceId = -1;
+    private CharSequence[] mLabels = null;
+
     private Button mSelectedButton;
     private OptionsChangedListener mListener;
 
@@ -36,16 +42,26 @@ public class FilterButtons extends LinearLayout implements View.OnClickListener 
     }
     public FilterButtons(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Log.i(TAG, "FilterButtons(Context context, AttributeSet attrs)");
         init(context, attrs, -1);
     }
     public FilterButtons(Context context, AttributeSet attrs, int defStyle){
         super(context, attrs, defStyle);
+        Log.i(TAG, "FilterButtons(Context context, AttributeSet attrs, int defStyle)");
         init(context, attrs, -1);
     }
 
     public void setOnOptionChangedListener(OptionsChangedListener listener){
         mListener = listener;
     }
+
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        prepareViews();
+    }
+
 
     /**
      * Select button with given index
@@ -70,51 +86,95 @@ public class FilterButtons extends LinearLayout implements View.OnClickListener 
         return -1;
     }
 
-    private void init(Context context, AttributeSet attrs, int labelsArrayResourceId) {
-        final CharSequence[] labels;
-        if( isInEditMode() ) {
-            labels = new CharSequence[3];
-            labels[0] = "Label 1";
-            labels[1] = "Label 2";
-            labels[2] = "Label 3";
-        } else if (attrs == null) {
-            labels = context.getResources().getTextArray(labelsArrayResourceId);
-        } else {
-            final TypedArray customAttrs = context.obtainStyledAttributes(attrs, R.styleable.FilterButtons);
-            labels = customAttrs.getTextArray(R.styleable.FilterButtons_labels);
-            customAttrs.recycle();
-        }
+    private void prepareViews() {
+        Log.i(TAG, "prepareViews()");
+        Log.i(TAG, "mContext = "+mContext);
+        Log.i(TAG, "mAttrs = "+mAttrs);
+        Log.i(TAG, "mLabelsResourceId = "+mLabelsResourceId);
 
-        //
-        if(labels == null) {
-            throw new InflateException("FilterButtons requires a labels");
+        final int count = getChildCount();
+        if( isInEditMode() && count == 0) {
+            mLabels = new CharSequence[3];
+            mLabels[0] = "Label 1("+count+")";
+            mLabels[1] = "Label 2("+count+")";
+            mLabels[2] = "Label 3("+count+")";
         }
-        final LayoutParams params = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
         //
-        for(int i=0; i<3; i++){
-            final CharSequence label = labels[i];
-            final Button button = new Button(context);
-            addView(button);
-            button.setOnClickListener(this);
-            button.setTag(i);
-            button.setText(label);
-            button.setLayoutParams(params);
-            if(i==0){
-                mSelectedButton = button;
-                mSelectedButton.setEnabled(!true);
+        if(mLabels == null && count == 0) {
+            //no children from XML and no labels - error
+            throw new InflateException("FilterButtons requires a labels or children set in layout XML");
+        } else if(count == 0 && mLabels != null) {
+            //no children from XML but there is a labels list - create buttons
+            final LayoutParams params = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
+            //
+            for(int i=0; i<mLabels.length; i++){
+                final CharSequence label = mLabels[i];
+                final Button button = new Button(mContext);
+                addView(button);
+                button.setOnClickListener(this);
+                button.setTag(i);
+                button.setText(label);
+                button.setLayoutParams(params);
             }
+        } else {
+            //static (through layout XML) - validate if TAG's in place if not add and sent warning
+            for (int j = 0; j < count; j++) {
+                try {
+                    final Button button = (Button) getChildAt(j);
+                        button.setOnClickListener(this);//attach listener
+                    try {
+                        final int tag = Integer.parseInt((String) button.getTag());//it will be a string as it is inflated from XML
+                        button.setTag(tag);
+                    } catch(NumberFormatException nfe) {
+                        throw new InflateException("FilterButtons children (Button's) need the tag set to be as an Integer. Button '"+button.getText()+"' doesn't have the tag or it is not an int.");
+                    }
+
+
+
+                } catch(ClassCastException e){
+                    /* ignore non-buttons */
+                }
+            }
+        }
+        selectButtonByTag(0);
+    }
+
+    private void init(Context context, AttributeSet attrs, int labelsArrayResourceId) {
+        Log.i(TAG, "init(Context context, AttributeSet attrs, int labelsArrayResourceId)");
+        mContext = context;
+        mAttrs = attrs;
+        mLabelsResourceId = labelsArrayResourceId;
+
+        if (mAttrs == null) {
+            if(mLabelsResourceId!= -1) mLabels = mContext.getResources().getTextArray(mLabelsResourceId);
+        } else {
+            final TypedArray customAttrs = mContext.obtainStyledAttributes(mAttrs, R.styleable.FilterButtons);
+            mLabels = customAttrs.getTextArray(R.styleable.FilterButtons_labels);
+            customAttrs.recycle();
         }
     }
 
     private void toggleButtons(Button selected) {
         Log.i(TAG, "toggleButtons");
-        for(int i=0; i<3; i++){
-            final Button button = (Button) getChildAt(i);
-            button.setEnabled(true);
-            if(button == selected){
-                mSelectedButton = button;
-                mSelectedButton.setEnabled(!true);
+        mSelectedButton = null;
+        final int length = getChildCount();
+        for(int i=0; i<length; i++){
+            try {
+                final Button button = (Button) getChildAt(i);
+                button.setEnabled(true);
+                if(button == selected){
+                    mSelectedButton = button;
+                    mSelectedButton.setEnabled(!true);
+                }
+            } catch(ClassCastException e){
+                    /* ignore non-buttons */
             }
+        }
+    }
+    private void selectButtonByTag(int tag) {
+        final Button selected = (Button) findViewWithTag(tag);
+        if (selected != null) {
+           toggleButtons(selected);
         }
     }
 //--------------------------

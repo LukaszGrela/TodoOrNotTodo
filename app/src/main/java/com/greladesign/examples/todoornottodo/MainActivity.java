@@ -23,6 +23,15 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        DialogFragment dialog = (DialogFragment) getSupportFragmentManager().getFragment(Bundle.EMPTY, "NewTodoDialogFragment");
+        if(dialog != null) {
+            dialog.dismiss();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);

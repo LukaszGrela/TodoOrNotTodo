@@ -4,4 +4,8 @@
 
     <string name="dialog_new_todo_add">Add</string>
     <string name="dialog_new_todo_title">Add new task</string>
+
+    <string name="filterbuttons_btn_0">All</string>
+    <string name="filterbuttons_btn_1">Active</string>
+    <string name="filterbuttons_btn_2">Finished</string>
 </resources>

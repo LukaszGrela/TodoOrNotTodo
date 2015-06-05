@@ -160,6 +160,21 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
+    public void onResume() {
+        Log.i(TAG, "onResume");
+        super.onResume();
+        //
+        final int filterSelectionIndex = mCurrentFilterOption.index;
+        mFilterGroup.selectButton(filterSelectionIndex);
+        filterList(filterSelectionIndex);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         Log.i(TAG, "onDetach");
@@ -168,6 +183,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     private void findViews(View view) {
+        Log.i(TAG, "findViews()");
         mStatus = (TextView) view.findViewById(R.id.tvStatus);
         mStatus.setText("");
         mList = (ListView) view.findViewById(R.id.listView);
@@ -199,10 +215,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private void initList() {
         Log.i(TAG, "initList");
         mList.setAdapter(mAdapter);
-        //
-        final int filterSelectionIndex = mCurrentFilterOption.index;
-        mFilterGroup.selectButton(filterSelectionIndex);
-        filterList(filterSelectionIndex);
     }
 
     private void filterList(int btnId){

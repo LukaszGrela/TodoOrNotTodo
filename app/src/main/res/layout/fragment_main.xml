@@ -27,6 +27,28 @@
             app:labels="@array/filter_options"
             >
 
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/filterbuttons_btn_0"
+                android:id="@+id/btn1"
+                android:layout_weight="1"
+                android:tag="0"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/filterbuttons_btn_1"
+                android:id="@+id/btn2"
+                android:layout_weight="1"
+                android:tag="1"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/filterbuttons_btn_2"
+                android:id="@+id/btn3"
+                android:layout_weight="1"
+                android:tag="2"/>
+
         </com.greladesign.examples.todoornottodo.ui.FilterButtons>
 
     <TextView
