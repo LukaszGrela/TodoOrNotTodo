@@ -2,10 +2,17 @@
     <string name="app_name">TodoOrNotTodo</string>
     <string name="action_clear">Clear</string>
 
+    <string name="dialog_modify_todo_add">Modify</string>
+    <string name="dialog_modify_todo_title">Modify task</string>
     <string name="dialog_new_todo_add">Add</string>
     <string name="dialog_new_todo_title">Add new task</string>
 
     <string name="filterbuttons_btn_0">All</string>
     <string name="filterbuttons_btn_1">Active</string>
     <string name="filterbuttons_btn_2">Finished</string>
+
+    <string name="contextmenu_title_edit">Edit</string>
+    <string name="contextmenu_title_delete">Delete</string>
+    <string name="contextmenu_title_reopen">Reopen</string>
+    <string name="contextmenu_title_finish">Finish</string>
 </resources>

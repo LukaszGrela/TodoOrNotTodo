@@ -24,16 +24,26 @@ public class NewTodoDialogFragment extends DialogFragment {
         public void onTodoAdded(Todo todo) {
 
         }
+
+        @Override
+        public void onTodoModified(Todo todo) {
+
+        }
     };
     private NewTodoDialogListener mListener = sDummyListener;
     public interface NewTodoDialogListener {
         void onTodoAdded(Todo todo);
+        void onTodoModified(Todo todo);
     }
 
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        final Bundle args = getArguments();
+        final boolean editMode = args != null && args.getLong("id", -1) != -1;
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         final LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -42,15 +52,24 @@ public class NewTodoDialogFragment extends DialogFragment {
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.fragment_dialog_new_todo, null);
         final EditText mTask = (EditText) view.findViewById(R.id.task);
+        if(editMode) {
+            final String task = args.getString("task", "");
+            mTask.setText(task);
+        }
         final RadioGroup mPriorityGroup = (RadioGroup) view.findViewById(R.id.priorityGroup);
-        final RadioButton radio = (RadioButton) view.findViewWithTag("1");//
+        String tag = "1";
+        if(editMode){
+            tag = args.getInt("priority", 1) + "";
+        }
+        final RadioButton radio = (RadioButton) view.findViewWithTag(tag);//
         if(radio!=null){
             radio.setChecked(true);
         }
-
+        int positiveLabelId = editMode ? R.string.dialog_modify_todo_add:R.string.dialog_new_todo_add;
+        int titleLabelId = editMode ? R.string.dialog_modify_todo_title:R.string.dialog_new_todo_title;
         builder.setView(view)
                         // Add action buttons
-                        .setPositiveButton(R.string.dialog_new_todo_add, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(positiveLabelId, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 //create new task and pass it back
@@ -70,11 +89,21 @@ public class NewTodoDialogFragment extends DialogFragment {
 
                                     } else {
                                         //temp
-                                        todo.setDate(System.currentTimeMillis());
                                         todo.setPriority(priority);
                                         todo.setTask(task);
                                     }
-                                    mListener.onTodoAdded(todo);
+                                    //
+                                    if(editMode) {
+                                        todo.setDate(args.getLong("started"));
+                                        todo.setIsDone(args.getBoolean("done"));
+                                        todo.setId(args.getLong("id"));
+                                    }
+                                    else {
+                                        todo.setDate(System.currentTimeMillis());
+                                    }
+                                    //
+                                    if(editMode) mListener.onTodoModified(todo);
+                                    else mListener.onTodoAdded(todo);
                                 }
                                 //
                             }
@@ -85,7 +114,7 @@ public class NewTodoDialogFragment extends DialogFragment {
                                 dismiss();
                             }
                         })
-                        .setTitle(R.string.dialog_new_todo_title);
+                        .setTitle(titleLabelId);
         return builder.create();
     }
 

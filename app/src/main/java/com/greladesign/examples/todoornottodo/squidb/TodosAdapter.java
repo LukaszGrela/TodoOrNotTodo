@@ -2,7 +2,6 @@ package com.greladesign.examples.todoornottodo.squidb;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -99,6 +98,8 @@ public class TodosAdapter extends SquidCursorAdapter<Todo> {
                 mInternal = false;
             }
         }
+        view.setOnCreateContextMenuListener(null);//! - this is the solution for problems with context menu not working
+
         return view;
     }
 }

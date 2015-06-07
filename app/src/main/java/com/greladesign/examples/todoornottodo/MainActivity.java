@@ -74,12 +74,18 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
     }
 
     @Override
+    public void onEditTask(Todo model) {
+        openEditTodoDialogue(model);
+    }
+
+
+    @Override
     public void onClearTasks() {
         /* we could check if user is sure to remove them all */
 
         final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
         final int deleted = app.dao().deleteWhere(Todo.class, Todo.DONE.eq(true));
-        Log.i(TAG, "Deleted "+deleted+" tasks.");
+        Log.i(TAG, "Deleted " + deleted + " tasks.");
     }
 
 
@@ -87,7 +93,23 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
     private void openAddTodoDialogue() {
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new NewTodoDialogFragment();
+        //dialog.setArguments(arguments);
         dialog.show(getSupportFragmentManager(), "NewTodoDialogFragment");
+    }
+
+    private void openEditTodoDialogue(Todo model) {
+
+        // Create an instance of the dialog fragment and show it
+        final DialogFragment dialog = new NewTodoDialogFragment();
+        final Bundle arguments = new Bundle();
+            arguments.putLong("id", model.getId());
+            arguments.putString("task", model.getTask());
+            arguments.putBoolean("done", model.isDone());
+            arguments.putInt("priority", model.getPriority());
+            arguments.putLong("started", model.getDate());
+        dialog.setArguments(arguments);
+        dialog.show(getSupportFragmentManager(), "NewTodoDialogFragment");
+
     }
 
     @Override
@@ -96,6 +118,15 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
 
         if(!app.dao().createNew(todo)) {
             Log.e(TAG, "Failed to add task.");
+        }
+    }
+
+    @Override
+    public void onTodoModified(Todo todo) {
+        Log.i(TAG, "modifying");
+        final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
+        if(!app.dao().persist(todo)){
+            Log.e(TAG, "Failed to modify task.");
         }
     }
 }

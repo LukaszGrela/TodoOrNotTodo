@@ -9,9 +9,11 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -99,12 +101,16 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     public interface MainActivityHandler {
         void onAddTask();
+        void onEditTask(Todo model);
         void onClearTasks();
     }
 
     private MainActivityHandler sDummyCallback = new MainActivityHandler() {
         @Override
         public void onAddTask() {}
+
+        @Override
+        public void onEditTask(Todo model) {}
 
         @Override
         public void onClearTasks() {
@@ -249,13 +255,72 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
         if(v.getId() == R.id.listView) {
-            //AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-            //menu.setHeaderTitle(Countries[info.position]);
-            String[] menuItems = {"Edit","Delete"};
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            //
+            final Todo todo = (Todo)mList.getItemAtPosition(info.position);
+            Log.i(TAG, todo.toString());
+            /*
+            //info.id;
+            //info.position;
+            String[] menuItems = {"Edit","Delete", (todo.isDone() ? "Reopen":"Finish")};
             for (int i = 0; i<menuItems.length; i++) {
                 menu.add(Menu.NONE, i, i, menuItems[i]);
             }
+            */
+            final MenuInflater inflater = getActivity().getMenuInflater();
+            if(todo.isDone()) {
+                inflater.inflate(R.menu.todos_context_done, menu);
+            } else {
+                inflater.inflate(R.menu.todos_context_undone, menu);
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        //
+        final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
+        final DatabaseDao dao = app.dao();
+        final Todo todo = (Todo)mList.getItemAtPosition(info.position);
+        Log.i(TAG, todo.toString());
+
+        int id = item.getItemId();
+
+        final Criterion criterion = Todo.ID.eq(todo.getId());
+        switch (id) {
+            case R.id.contextmenu_delete:
+                dao.deleteWhere(Todo.class, Todo.ID.eq(todo.getId()));
+                return true;
+            case R.id.contextmenu_edit:
+                Log.w(TAG, "TODO edit option");
+                if(mCallback != null){
+                    mCallback.onEditTask(todo.clone());
+                }
+                return true;
+            case R.id.contextmenu_reopen:
+                if(todo != null) {
+                    Update updateReopen = Update.table(Todo.TABLE).set(Todo.DONE, false).where(criterion);
+                    int result = dao.update(updateReopen);
+                    if(result == -1 || result > 1) {
+                        Log.e(TAG, "Failed to update Todo, result="+result);
+                    }
+                }
+                return true;
+            case R.id.contextmenu_finish:
+                if(todo != null) {
+                    Update updateReopen = Update.table(Todo.TABLE).set(Todo.DONE, true).where(criterion);
+                    int result = dao.update(updateReopen);
+                    if(result == -1 || result > 1) {
+                        Log.e(TAG, "Failed to update Todo, result="+result);
+                    }
+                }
+                return true;
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 
