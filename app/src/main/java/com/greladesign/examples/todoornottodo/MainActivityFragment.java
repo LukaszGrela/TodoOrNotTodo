@@ -344,6 +344,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 break;
         }
 
+        query.orderBy(Todo.PRIORITY.desc(), Todo.TASK.asc());
+
         final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
         final DatabaseDao dao = app.dao();
         final Context context = app.getApplicationContext();
