@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.greladesign.examples.todoornottodo.R;
@@ -45,61 +46,115 @@ public class TodosAdapter extends SquidCursorAdapter<Todo> {
 
     private View createViewFromResource(final int position, View convertView, ViewGroup parent,
                                         int resource) {
-        View view;
-        TextView tvTask;
-        CheckBox cbDone;
+            ListRowTodoViewHolder holder;
 
-        if (convertView == null) {
-            view = getLayoutInflater().inflate(resource, parent, false);
-        } else {
-            view = convertView;
-        }
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(resource, parent, false);
+                convertView.setTag(new ListRowTodoViewHolder(convertView));
+            }
 
-        Todo item = getItem(position);
+            holder = (ListRowTodoViewHolder) convertView.getTag();
+            final CheckBox cbDone = holder.getDone();
+            final TextView tvTask = holder.getTask();
+            final ImageView ivPriority = holder.getPriority();
 
-        try {
-            tvTask = (TextView) view.findViewById(R.id.tvTask);
-        } catch (ClassCastException e) {
-            throw new IllegalStateException(
-                    getClass().getSimpleName() +" requires the resource ID to be a TextView", e);
-        }
-        try {
-            cbDone = (CheckBox) view.findViewById(R.id.cbDone);
-            if(cbDone != null){
+            final Todo item = getItem(position);
 
+            if(cbDone != null) {
+                //
                 cbDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(mListener != null && !mInternal) {
+                        if (mListener != null && !mInternal) {
                             mListener.onCompletionChanged(position, isChecked);
                         }
                     }
                 });
 
             }
-        } catch (ClassCastException e) {
-            throw new IllegalStateException(
-                    getClass().getSimpleName() +" requires the resource ID to be a TextView", e);
-        }
-        //Log.i(TAG, "item="+item);
-        if (item != null) {
-            if (tvTask != null) {
-                tvTask.setText(item.getTask());
-                if(item.isDone()) {
-                    tvTask.setPaintFlags(tvTask.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                } else {
-                    tvTask.setPaintFlags(tvTask.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            //Log.i(TAG, "item="+item);
+            if (item != null) {
+                if (tvTask != null) {
+                    tvTask.setText(item.getTask());
+                    if(item.isDone()) {
+                        tvTask.setPaintFlags(tvTask.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    } else {
+                        tvTask.setPaintFlags(tvTask.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    }
+                }
+                if (cbDone != null)
+                {
+                    mInternal = true;
+                    cbDone.setChecked(item.isDone());
+                    mInternal = false;
+                }
+                if (ivPriority != null) {
+                    if(item.getPriority() == 0) {
+                        ivPriority.setImageDrawable(getContext().getResources().getDrawable(R.drawable.todo_low));
+                    } else if(item.getPriority() == 1) {
+                        ivPriority.setImageDrawable(null/*getContext().getResources().getDrawable(R.drawable.empty)*/);
+                    } else if(item.getPriority() == 2) {
+                        ivPriority.setImageDrawable(getContext().getResources().getDrawable(R.drawable.todo_high));
+                    }
+
+
                 }
             }
-            if (cbDone != null)
-            {
-                mInternal = true;
-                cbDone.setChecked(item.isDone());
-                mInternal = false;
+            convertView.setOnCreateContextMenuListener(null);//! - this is the solution for problems with context menu not working
+
+            return convertView;
+    }
+    private static class ListRowTodoViewHolder {
+        private CheckBox mCbDone;
+        private TextView mTvTask;
+        private ImageView mIvPriority;
+
+        public ListRowTodoViewHolder(View row) {
+
+
+            prepareDoneCb(row.findViewById(R.id.cbDone));
+
+            prepareTaskTv(row.findViewById(R.id.tvTask));
+
+            preparePriorityIv(row.findViewById(R.id.ivPriority));
+
+        }
+
+        private void prepareDoneCb(View view) {
+            try {
+                mCbDone = (CheckBox) view;
+            } catch (ClassCastException e) {
+                throw new IllegalStateException(
+                        getClass().getSimpleName() +" requires the resource ID to be a CheckBox", e);
             }
         }
-        view.setOnCreateContextMenuListener(null);//! - this is the solution for problems with context menu not working
+        private void prepareTaskTv(View view) {
+            try {
+                mTvTask = (TextView) view;
+            } catch (ClassCastException e) {
+                throw new IllegalStateException(
+                        getClass().getSimpleName() +" requires the resource ID to be a TextView", e);
+            }
+        }
+        private void preparePriorityIv(View view) {
+            try {
+                mIvPriority = (ImageView) view;
+            } catch (ClassCastException e) {
+                throw new IllegalStateException(
+                        getClass().getSimpleName() +" requires the resource ID to be a ImageView", e);
+            }
+        }
 
-        return view;
+        public CheckBox getDone() {
+            return mCbDone;
+        }
+
+        public TextView getTask() {
+            return mTvTask;
+        }
+
+        public ImageView getPriority() {
+            return mIvPriority;
+        }
     }
 }

@@ -81,7 +81,7 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
 
     @Override
     public void onClearTasks() {
-        /* we could check if user is sure to remove them all */
+        /* TODO: we could check if user is sure to remove them all */
 
         final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
         final int deleted = app.dao().deleteWhere(Todo.class, Todo.DONE.eq(true));
