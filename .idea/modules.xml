@@ -4,9 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TodoOrNotTodo.iml" filepath="$PROJECT_DIR$/TodoOrNotTodo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../frameworks/squidb/squidb/squidb.iml" filepath="$PROJECT_DIR$/../frameworks/squidb/squidb/squidb.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../frameworks/squidb/squidb-annotations/squidb-annotations.iml" filepath="$PROJECT_DIR$/../frameworks/squidb/squidb-annotations/squidb-annotations.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../frameworks/squidb/squidb-processor/squidb-processor.iml" filepath="$PROJECT_DIR$/../frameworks/squidb/squidb-processor/squidb-processor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../frameworks/squidb/squidb/squidb.iml" filepath="$PROJECT_DIR$/../../frameworks/squidb/squidb/squidb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../frameworks/squidb/squidb-annotations/squidb-annotations.iml" filepath="$PROJECT_DIR$/../../frameworks/squidb/squidb-annotations/squidb-annotations.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../frameworks/squidb/squidb-processor/squidb-processor.iml" filepath="$PROJECT_DIR$/../../frameworks/squidb/squidb-processor/squidb-processor.iml" />
     </modules>
   </component>
 </project>

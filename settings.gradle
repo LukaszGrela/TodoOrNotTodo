@@ -1,9 +1,9 @@
 include ':app'
 
 include ':squidb'
-project(':squidb').projectDir = new File(settingsDir, '../frameworks/squidb/squidb')
+project(':squidb').projectDir = new File(settingsDir, '../../../../dev/android/frameworks/squidb/squidb')
 include ':squidb-annotations'
-project(':squidb-annotations').projectDir = new File(settingsDir, '../frameworks/squidb/squidb-annotations')
+project(':squidb-annotations').projectDir = new File(settingsDir, '../../../../dev/android/frameworks/squidb/squidb-annotations')
 include ':squidb-processor'
-project(':squidb-processor').projectDir = new File(settingsDir, '../frameworks/squidb/squidb-processor')
+project(':squidb-processor').projectDir = new File(settingsDir, '../../../../dev/android/frameworks/squidb/squidb-processor')
 
