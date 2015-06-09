@@ -78,8 +78,10 @@ public class TodosAdapter extends SquidCursorAdapter<Todo> {
                     tvTask.setText(item.getTask());
                     if(item.isDone()) {
                         tvTask.setPaintFlags(tvTask.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        tvTask.setTextColor(getContext().getResources().getColor(R.color.task_color_done));
                     } else {
                         tvTask.setPaintFlags(tvTask.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                        tvTask.setTextColor(getContext().getResources().getColor(R.color.task_color_not_done));
                     }
                 }
                 if (cbDone != null)
