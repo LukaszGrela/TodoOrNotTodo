@@ -12,7 +12,15 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
         android:textColor="@android:color/black"
-        android:hint="Task" />
+        android:hint="@string/edittext_task_hint" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/priority_label"
+        android:id="@+id/tvPriorityLabel"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="6dp" />
 
     <RadioGroup
         android:layout_width="fill_parent"
@@ -24,21 +32,21 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Low"
+            android:text="@string/priority_rb_low_label"
             android:id="@+id/rbPriorityLow"
             android:layout_gravity="center_horizontal"
             android:tag="0"/>
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Normal"
+            android:text="@string/priority_rb_normal_label"
             android:id="@+id/rbPriorityNormal"
             android:layout_gravity="center_horizontal"
             android:tag="1" />
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="High"
+            android:text="@string/priority_rb_high_label"
             android:id="@+id/rbPriorityHigh"
             android:layout_gravity="center_horizontal"
             android:tag="2" />

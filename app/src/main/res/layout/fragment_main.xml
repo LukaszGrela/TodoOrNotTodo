@@ -17,7 +17,7 @@
         android:layout_above="@+id/tvStatus"
         android:layout_below="@+id/filterGroup" />
 
-    <com.greladesign.examples.todoornottodo.ui.FilterButtons
+    <com.greladesign.examples.multibutton.ui.MultiButton
             android:id="@+id/filterGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
                 android:layout_weight="1"
                 android:tag="2"/>
 
-        </com.greladesign.examples.todoornottodo.ui.FilterButtons>
+    </com.greladesign.examples.multibutton.ui.MultiButton>
 
     <TextView
         android:layout_width="wrap_content"
@@ -64,13 +64,13 @@
         android:layout_alignParentStart="true"
         android:gravity="center" />
 
-    <!--<com.commelius.android.components.debug.BucketListTextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-        <!--android:id="@+id/oBucket"-->
-        <!--android:layout_above="@+id/tvStatus"-->
-        <!--android:layout_alignParentRight="true" />-->
+    <com.commelius.android.components.debug.BucketListTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/oBucket"
+        android:layout_above="@+id/tvStatus"
+        android:layout_alignParentRight="true" />
 
 
     <LinearLayout
@@ -85,13 +85,13 @@
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Add TODO"
+            android:text="@string/new_todo_button_label"
             android:id="@+id/btnAdd"
             android:layout_weight="1" />
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Clear Completed"
+            android:text="@string/clear_todo_button_label"
             android:id="@+id/btnClear"
             android:layout_weight="1" />
     </LinearLayout>

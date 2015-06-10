@@ -18,10 +18,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.greladesign.examples.multibutton.ui.MultiButton;
 import com.greladesign.examples.todoornottodo.squidb.SupportSquidCursorLoader;
 import com.greladesign.examples.todoornottodo.squidb.Todo;
 import com.greladesign.examples.todoornottodo.squidb.TodosAdapter;
-import com.greladesign.examples.todoornottodo.ui.FilterButtons;
 import com.yahoo.squidb.data.DatabaseDao;
 import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Criterion;
@@ -56,8 +56,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             }
         }
     };
-    private FilterButtons mFilterGroup;
-    private FilterButtons.OptionsChangedListener mFilterOptionChanged = new FilterButtons.OptionsChangedListener() {
+    private MultiButton mFilterGroup;
+    private MultiButton.OptionsChangedListener mFilterOptionChanged = new MultiButton.OptionsChangedListener() {
         @Override
         public void onOptionChanged(int btnId) {
             filterList(btnId);
@@ -214,7 +214,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             }
         });
 
-        mFilterGroup = (FilterButtons) view.findViewById(R.id.filterGroup);
+        mFilterGroup = (MultiButton) view.findViewById(R.id.filterGroup);
         mFilterGroup.setOnOptionChangedListener(mFilterOptionChanged);
     }
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_clear">Wyczyść</string>
+    <string name="contextmenu_title_delete">Usuń</string>
+    <string name="contextmenu_title_edit">Edytuj</string>
+    <string name="contextmenu_title_finish">Zakończ zadanie</string>
+    <string name="contextmenu_title_reopen">Otwórz zadanie</string>
+    <string name="dialog_modify_todo_add">Zachowaj</string>
+    <string name="dialog_modify_todo_title">Edytuj zadanie</string>
+    <string name="dialog_new_todo_add">Dodaj</string>
+    <string name="dialog_new_todo_title">Dodaj nowe zadanie</string>
+    <string name="filterbuttons_btn_0">Wszystko</string>
+    <string name="filterbuttons_btn_1">Aktywne</string>
+    <string name="filterbuttons_btn_2">Ukończone</string>
+    <string name="clear_todo_button_label">Usuń ukończone</string>
+    <string name="new_todo_button_label">Dodaj zadanie</string>
+    <string name="priority_rb_low_label">Niski</string>
+    <string name="priority_rb_normal_label">Normalny</string>
+    <string name="priority_rb_high_label">Wysoki</string>
+    <string name="edittext_task_hint">Treść zadania</string>
+    <string name="priority_label">Priorytet</string>
+</resources>

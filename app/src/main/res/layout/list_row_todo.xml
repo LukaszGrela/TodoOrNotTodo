@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:minHeight="48dp"
     android:gravity="center_vertical">
 
     <CheckBox
@@ -9,13 +10,13 @@
         android:layout_height="32dp"
         android:id="@+id/cbDone"
         android:layout_margin="4dp"
-        android:button="@drawable/todo_checkbox"
+        android:button="@drawable/todo_cb"
         android:checked="false" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Task"
+        android:text="Long dummy text, to test all sort of ellipsize settings. Lorem ipsum, dolor sit amet."
         android:id="@+id/tvTask"
         android:layout_weight="1"
         android:layout_marginTop="4dp"
@@ -23,7 +24,8 @@
         android:lines="1"
         android:maxLines="1"
         android:ellipsize="middle"
-        android:layout_marginLeft="4dp" />
+        android:layout_marginLeft="4dp"
+        android:singleLine="true" />
 
     <ImageView
         android:layout_width="32dp"

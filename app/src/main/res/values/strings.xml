@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TodoOrNotTodo</string>
+    <string name="app_name" translatable="false">TodoOrNotTodo</string>
     <string name="action_clear">Clear</string>
 
     <string name="dialog_modify_todo_add">Modify</string>
@@ -15,4 +15,11 @@
     <string name="contextmenu_title_delete">Delete</string>
     <string name="contextmenu_title_reopen">Reopen</string>
     <string name="contextmenu_title_finish">Finish</string>
+    <string name="clear_todo_button_label">Clear Completed</string>
+    <string name="new_todo_button_label">Add TODO</string>
+    <string name="priority_rb_low_label">Low</string>
+    <string name="priority_rb_normal_label">Normal</string>
+    <string name="priority_rb_high_label">High</string>
+    <string name="edittext_task_hint">Task</string>
+    <string name="priority_label">Priority</string>
 </resources>

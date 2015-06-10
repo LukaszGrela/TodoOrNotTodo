@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="FilterButtons">
+    <declare-styleable name="MultiButton">
         <attr name="labels" format="reference" />
     </declare-styleable>
 </resources>
