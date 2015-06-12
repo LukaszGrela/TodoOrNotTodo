@@ -22,15 +22,13 @@ import com.greladesign.examples.multibutton.ui.MultiButton;
 import com.greladesign.examples.todoornottodo.squidb.SupportSquidCursorLoader;
 import com.greladesign.examples.todoornottodo.squidb.Todo;
 import com.greladesign.examples.todoornottodo.squidb.TodosAdapter;
-import com.yahoo.squidb.data.DatabaseDao;
+import com.greladesign.examples.todoornottodo.squidb.TodosHelper;
 import com.yahoo.squidb.data.SquidCursor;
-import com.yahoo.squidb.sql.Criterion;
 import com.yahoo.squidb.sql.Query;
-import com.yahoo.squidb.sql.Update;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * Main activity fragment holds the "filter" buttons, todo list and add/clear buttons
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<SquidCursor<Todo>> {{}
 
@@ -44,15 +42,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         public void onCompletionChanged(int position, boolean state) {
             Log.i(TAG, "TodoRowActionListener(int position="+position+", boolean state="+state+")");
             final Todo todo = mAdapter.getItem(position);
-            if(todo != null) {
-                final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
-                final DatabaseDao dao = app.dao();
-                Criterion criterion = Todo.ID.eq(todo.getId());
-                Update update = Update.table(Todo.TABLE).set(Todo.DONE, state).where(criterion);
-                final int result = dao.update(update);
-                if(result == -1 || result > 1) {
-                    Log.e(TAG, "Failed to update Todo, result="+result);
-                }
+
+            if (TodosHelper.getInstance().updateCompletion(todo, state) == false) {
+                Log.e(TAG, "Failed to update Todo.");
             }
         }
     };
@@ -93,7 +85,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                     return ACTIVE;
                 case 0:
                 default:
-                /* do nothing already set as "all" */
                     return ALL;
             }
         }
@@ -234,16 +225,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
      * Update the task's left counter and show/hide the clear completed task button
      */
     private void updateTaskCount() {
-
-        final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
-        final DatabaseDao dao = app.dao();
-
-        final int count = dao.count(Todo.class, Todo.DONE.eq(false));
+        final TodosHelper helper = TodosHelper.getInstance();
+        final int count = helper.countIncomplete();
         final String label = count + " item(s) left.";
         Log.i(TAG, label);
 
         mStatus.setText(label);
-        final int completed = dao.count(Todo.class, Todo.DONE.eq(true));
+        //
+        final int completed = helper.countComplete();
 
         if(completed > 0) {
             mBtnClear.setVisibility(View.VISIBLE);
@@ -261,14 +250,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             //
             final Todo todo = (Todo)mList.getItemAtPosition(info.position);
             Log.i(TAG, todo.toString());
-            /*
-            //info.id;
-            //info.position;
-            String[] menuItems = {"Edit","Delete", (todo.isDone() ? "Reopen":"Finish")};
-            for (int i = 0; i<menuItems.length; i++) {
-                menu.add(Menu.NONE, i, i, menuItems[i]);
-            }
-            */
+
             final MenuInflater inflater = getActivity().getMenuInflater();
             if(todo.isDone()) {
                 inflater.inflate(R.menu.todos_context_done, menu);
@@ -283,17 +265,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
         //
-        final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
-        final DatabaseDao dao = app.dao();
+        final TodosHelper helper = TodosHelper.getInstance();
         final Todo todo = (Todo)mList.getItemAtPosition(info.position);
         Log.i(TAG, todo.toString());
+        final int id = item.getItemId();
 
-        int id = item.getItemId();
-
-        final Criterion criterion = Todo.ID.eq(todo.getId());
         switch (id) {
             case R.id.contextmenu_delete:
-                dao.deleteWhere(Todo.class, Todo.ID.eq(todo.getId()));
+                helper.deleteTask(todo);
                 return true;
             case R.id.contextmenu_edit:
                 Log.w(TAG, "TODO edit option");
@@ -302,21 +281,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 }
                 return true;
             case R.id.contextmenu_reopen:
-                if(todo != null) {
-                    Update updateReopen = Update.table(Todo.TABLE).set(Todo.DONE, false).where(criterion);
-                    int result = dao.update(updateReopen);
-                    if(result == -1 || result > 1) {
-                        Log.e(TAG, "Failed to update Todo, result="+result);
-                    }
+                if (helper.reopenTask(todo) == false) {
+                    Log.e(TAG, "Failed to update Todo.");
                 }
                 return true;
             case R.id.contextmenu_finish:
-                if(todo != null) {
-                    Update updateReopen = Update.table(Todo.TABLE).set(Todo.DONE, true).where(criterion);
-                    int result = dao.update(updateReopen);
-                    if(result == -1 || result > 1) {
-                        Log.e(TAG, "Failed to update Todo, result="+result);
-                    }
+                if (helper.completeTask(todo) == false) {
+                    Log.e(TAG, "Failed to update Todo.");
                 }
                 return true;
             default:
@@ -329,27 +300,24 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public Loader<SquidCursor<Todo>> onCreateLoader(int id, Bundle args) {
         Log.i(TAG, "onCreateLoader("+id+")");
 
-        final Query query = Query.select(Todo.PROPERTIES);
-
+        final TodosHelper helper = TodosHelper.getInstance();
+        Query query;
         switch (mCurrentFilterOption){
             case ACTIVE://not done
-                query.where(Todo.DONE.eq(false));
+                query = helper.getIncompleteTasksQuery();
                 break;
             case COMPLETED://done
-                query.where(Todo.DONE.eq(true));
+                query = helper.getCompleteTasksQuery();
                 break;
             case ALL:
             default:
-                /* do nothing already set as "all" */
+                query = helper.getFilteredTasksQuery(null);
                 break;
         }
 
-        query.orderBy(Todo.PRIORITY.desc(), Todo.TASK.asc());
-
         final TodoOrNotTodo app = (TodoOrNotTodo)getActivity().getApplication();
-        final DatabaseDao dao = app.dao();
         final Context context = app.getApplicationContext();
-        final SupportSquidCursorLoader<Todo> loader = new SupportSquidCursorLoader<Todo>(context, dao, Todo.class, query);
+        final SupportSquidCursorLoader<Todo> loader = new SupportSquidCursorLoader<Todo>(context, TodosHelper.getInstance().dao(), Todo.class, query);
         loader.setNotificationUri(Todo.CONTENT_URI);
         return loader;
     }

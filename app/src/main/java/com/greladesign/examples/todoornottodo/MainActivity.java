@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.greladesign.examples.todoornottodo.NewTodoDialogFragment.NewTodoDialogListener;
 import com.greladesign.examples.todoornottodo.squidb.Todo;
-import com.yahoo.squidb.sql.Criterion;
+import com.greladesign.examples.todoornottodo.squidb.TodosHelper;
 
 
 public class MainActivity extends ActionBarActivity implements MainActivityFragment.MainActivityHandler, NewTodoDialogListener {
@@ -48,8 +48,8 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_clear) {
 
-            final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
-            app.dao().deleteWhere(Todo.class, Criterion.all);
+
+            TodosHelper.getInstance().deleteAll();
 
             return true;
         }
@@ -60,16 +60,6 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
     @Override
     public void onAddTask() {
         openAddTodoDialogue();
-        /*
-        final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
-
-        final Todo randomTask = new Todo();
-        randomTask.setDate(System.currentTimeMillis());
-
-        if(!app.dao().createNew(randomTask)) {
-            Log.e(TAG, "Failed to add task.");
-        }
-        */
 
     }
 
@@ -83,9 +73,9 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
     public void onClearTasks() {
         /* TODO: we could check if user is sure to remove them all */
 
-        final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
-        final int deleted = app.dao().deleteWhere(Todo.class, Todo.DONE.eq(true));
+        final int deleted = TodosHelper.getInstance().deleteComplete();
         Log.i(TAG, "Deleted " + deleted + " tasks.");
+
     }
 
 
@@ -93,7 +83,7 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
     private void openAddTodoDialogue() {
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new NewTodoDialogFragment();
-        //dialog.setArguments(arguments);
+
         dialog.show(getSupportFragmentManager(), "NewTodoDialogFragment");
     }
 
@@ -114,18 +104,16 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
 
     @Override
     public void onTodoAdded(Todo todo) {
-        final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
 
-        if(!app.dao().createNew(todo)) {
+        if (!TodosHelper.getInstance().newTask(todo)) {
             Log.e(TAG, "Failed to add task.");
         }
     }
 
     @Override
     public void onTodoModified(Todo todo) {
-        Log.i(TAG, "modifying");
-        final TodoOrNotTodo app = (TodoOrNotTodo)getApplication();
-        if(!app.dao().persist(todo)){
+
+        if (!TodosHelper.getInstance().modifyTask(todo)) {
             Log.e(TAG, "Failed to modify task.");
         }
     }
