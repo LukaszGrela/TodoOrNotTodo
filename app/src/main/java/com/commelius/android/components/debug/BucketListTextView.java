@@ -60,8 +60,9 @@ public class BucketListTextView extends TextView {
 		{
 			setText("bucket list");
 		} else {
-			
-			setText(Utils.getBucketList(fContext).toString());
+
+			//setText(Utils.getBucketList(fContext).toString());
+			setText(Utils.chooseBucketList(fContext, Utils.BucketFlags.ALL).toString());
 		}
 		
 	}

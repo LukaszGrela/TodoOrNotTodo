@@ -95,46 +95,4 @@
             android:id="@+id/btnClear"
             android:layout_weight="1" />
     </LinearLayout>
-    <!--
-           <RadioGroup android:id="@+id/filterGroup"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"
-               android:layout_marginTop="0dp"
-               android:orientation="horizontal"
-               android:layout_alignParentTop="true"
-               android:layout_alignParentRight="true"
-               android:layout_alignParentLeft="true"
-               android:layout_centerHorizontal="true"
-               >
-           <ToggleButton
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:id="@+id/btnShowAll"
-               android:layout_weight="1"
-               android:textOff="All"
-               android:textOn="All" />
-
-               <Button
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="New Button"
-                   android:id="@+id/button"
-                   android:layout_weight="1" />
-
-               <ToggleButton
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:id="@+id/btnShowActive"
-               android:layout_weight="1"
-               android:textOff="Active"
-               android:textOn="Active" />
-           <ToggleButton
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:id="@+id/btnShowCompleted"
-               android:layout_weight="1"
-               android:textOff="Completed"
-               android:textOn="Completed" />
-       </RadioGroup>
-   -->
 </RelativeLayout>
