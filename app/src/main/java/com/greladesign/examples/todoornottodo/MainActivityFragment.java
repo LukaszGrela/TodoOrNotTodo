@@ -30,7 +30,7 @@ import com.yahoo.squidb.sql.Query;
 /**
  * Main activity fragment holds the "filter" buttons, todo list and add/clear buttons
  */
-public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<SquidCursor<Todo>> {{}
+public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<SquidCursor<Todo>> {
 
 
     private static final int LOADER_ID = 1;
